@@ -1,3 +1,4 @@
+
 def priority(operation):
     if operation == '+' or operation == '-':
         return 1
@@ -33,7 +34,42 @@ def in2post(expression):
     
     return ''.join(output) # bez join vigladit kak massiv
 
+def calculatein2post(expression):
+    expi2p = in2post(expression)
+    num = ""
+    numint = 0
+    numint2 = 0
+    oper = []
+    print(expi2p)
+    for char in expi2p:
+        if char.isalnum():
+            num += char
+        elif char == ' ' and numint == 0:
+            numint = int(num)
+            num = ""
+        elif char == '+':
+            numint2 = int(num)
+            num = ""
+            numint += numint2
+        elif char == '*':
+            numint2 = int(num)
+            num = ""
+            numint *= numint2
+        elif char == '/':
+            numint2 = int(num)
+            num = ""
+            numint /= numint2
+        elif char == '-':
+            numint2 = int(num)
+            num = ""
+            numint -= numint2
+            
+    print(numint)
+
+
 if __name__ == "__main__":
     expression = "(10 + 2) * 2"
     postfix_expression = in2post(expression)
-    print(f"Reverse Polish Notation of '{expression}' is {postfix_expression}")
+    print(f"Reverse Polish Notation of '{expression}' is {postfix_expression}")\
+    
+    result = calculatein2post(expression)
