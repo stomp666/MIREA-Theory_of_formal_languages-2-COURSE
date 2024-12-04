@@ -56,7 +56,7 @@ def add_token(tok):
         lt.next = new_entry
         lt = new_entry
 
-def lexer(filename):
+def lex(filename):
     try:
         with (open(filename, "r") as fd):
             CS = States.STANDBY
@@ -244,7 +244,7 @@ def print_tokens(lt_head):
 def main():
     filename = "test.txt"
 
-    result = lexer(filename)
+    result = lex(filename)
 
     if result == -1:
         print("Lexical analysis failed.")
