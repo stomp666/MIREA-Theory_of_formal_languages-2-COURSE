@@ -19,6 +19,7 @@ class States:
     DLM = "DLM"
     COMM = "COMM"
     ERR = "ERR"
+    NEQ = "NEQ"
 
 class TokNames:
     KWORD = "KWORD"
@@ -26,6 +27,7 @@ class TokNames:
     NUM = "NUM"
     OPER = "OPER"
     DELIM = "DELIM"
+    NEQ = "NEQ"
 
 class Token:
     def __init__(self, token_name, token_value):
@@ -76,6 +78,9 @@ def lex(filename):
                     elif c == '{':
                         c = fd.read(1)
                         CS = States.COMM
+                    elif c == '~':
+                        c = fd.read(1)
+                        CS = States.NEQ
                     else:
                         CS = States.DLM
                 elif CS == States.ID: # ID
@@ -230,6 +235,11 @@ def lex(filename):
                 elif CS == States.ERR: # ERR
                     print(f"\nAn unexpected error has occurred.")
                     CS = States.H
+                elif CS == States.NEQ:
+                    tok = Token(TokNames.NEQ, "~")
+                    add_token(tok)
+                    CS = States.H
+
 
     except FileNotFoundError:
         print(f"\nCannot open file {filename}.\n")
