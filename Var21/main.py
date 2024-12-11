@@ -20,6 +20,7 @@ class States:
     COMM = "COMM"
     ERR = "ERR"
     NEQ = "NEQ"
+    ALE = "ALE"
 
 class TokNames:
     KWORD = "KWORD"
@@ -28,6 +29,7 @@ class TokNames:
     OPER = "OPER"
     DELIM = "DELIM"
     NEQ = "NEQ"
+    ALE = "ALE"
 
 class Token:
     def __init__(self, token_name, token_value):
@@ -69,7 +71,11 @@ def lex(filename):
                 if CS == States.H: # H MODE
                     while c in [' ', '\t', '\n']:
                         c = fd.read(1)
-                    if c.isalpha() or c == '_':
+                    if c in ['N', 'E', 'Q', 'L', 'T', 'G']:
+                        buf += c
+                        c = fd.read(1)
+                        CS = States.ALE
+                    elif c.isalpha() or c == '_':
                         CS = States.ID
                     elif c.isdigit() or c == '.':
                         CS = States.NUMBER
@@ -83,6 +89,18 @@ def lex(filename):
                         CS = States.NEQ
                     else:
                         CS = States.DLM
+                elif CS == States.ALE:
+                    if buf in ["EQ", "LT", "LE", "GT", "GE"]:
+                        tok = Token(TokNames.ALE, buf)
+                        add_token(tok)
+                        c = fd.read(1)
+                        buf = ""
+                    elif buf == "NE":
+                        tok = Token(TokNames.NEQ, buf)
+                        add_token(tok)
+                        c = fd.read(1)
+                        buf = ""
+                    CS = States.H
                 elif CS == States.ID: # ID
                     buf = c
                     c = fd.read(1)
@@ -181,7 +199,7 @@ def lex(filename):
                     if c == ' ':
                         CS = States.H
                     if c == '~':
-                        tok = Token(TokNames.OPER, c)
+                        tok = Token(TokNames.NEQ, c)
                         add_token(tok)
                         c = fd.read(1)
                         CS = States.H
@@ -190,16 +208,6 @@ def lex(filename):
                         add_token(tok)
                         c = fd.read(1)
                         CS = States.H
-                    elif c in ['N', 'E', 'Q', 'L', 'T', 'G']:
-                        buf += c
-                        if buf in ["NE", "EQ", "LT", "LE", "GT", "GE"]:
-                            tok = Token(TokNames.OPER, buf)
-                            add_token(tok)
-                            c = fd.read(1)
-                        else:
-                            print(f"\nUnknown character: {buf}")
-                            c = fd.read(1)
-                            CS = States.ERR
                     elif c in ['p', 'l', 'u', 's', 'm', 'i', 'n', 'o', 'r'
                                , 'l', 't', 'd', 'v', 'a', 'd']:
                         buf += c
@@ -212,8 +220,8 @@ def lex(filename):
                         tok = Token(TokNames.KWORD, c)
                         add_token(tok)
                         c = fd.read(1)
+                        CS = States.H
                 elif CS == States.ASSIGN: # ASSIGN
-                    colon = c
                     c = fd.read(1)
                     if c == '=':
                         tok = Token(TokNames.OPER, ":=")
