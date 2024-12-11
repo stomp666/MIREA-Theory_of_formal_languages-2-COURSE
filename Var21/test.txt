@@ -1,19 +1,13 @@
-! a
+!
+%
 $ b
-% c
-1 as 2;
-::= xd as 2;
+::= a as 2;
 if else;
-a NE b;
-a plus b;
-a min b;
-a or b;
-a mult b;
-a div b;
-a and b;
-read a;
-write b;
-! a
-a NE b
-~ 7
+plus
+and
+EQ
+NE
+read
+write
+~
 {comment}
