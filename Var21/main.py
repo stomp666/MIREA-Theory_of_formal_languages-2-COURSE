@@ -12,7 +12,7 @@ operators = ["as", "plus", "min",
             "or", "mult", "div", "and", "if", "else", "~", "NE", "EQ", "LT", "LE", "GT", "GE"]
 
 class States:
-    STANDBY = "STANDBY"
+    H = "H"
     ID = "ID"
     NUMBER = "NUMBER"
     ASSIGN = "ASSIGN"
@@ -59,12 +59,12 @@ def add_token(tok):
 def lex(filename):
     try:
         with (open(filename, "r") as fd):
-            CS = States.STANDBY
+            CS = States.H
             buf = ""
             c = fd.read(1)
             while c:
                 #print(c)
-                if CS == States.STANDBY: # STANDBY MODE
+                if CS == States.H: # H MODE
                     while c in [' ', '\t', '\n']:
                         c = fd.read(1)
                     if c.isalpha() or c == '_':
@@ -94,7 +94,7 @@ def lex(filename):
                         tok = Token(TokNames.IDENT, buf)
                         buf = ''
                     add_token(tok)
-                    CS = States.STANDBY
+                    CS = States.H
                 elif CS == States.NUMBER: # NUMBER
                     buf = ''
 
@@ -171,20 +171,20 @@ def lex(filename):
                         add_token(tok)
                     else:
                         print(f"Unknown character: {buf}")
-                    CS = States.STANDBY
+                    CS = States.H
                 elif CS == States.DLM: # DLM
                     if c == ' ':
-                        CS = States.STANDBY
+                        CS = States.H
                     if c == '~':
                         tok = Token(TokNames.OPER, c)
                         add_token(tok)
                         c = fd.read(1)
-                        CS = States.STANDBY
+                        CS = States.H
                     if c in ['(', ')', ';', ',', '"']:
                         tok = Token(TokNames.DELIM, c)
                         add_token(tok)
                         c = fd.read(1)
-                        CS = States.STANDBY
+                        CS = States.H
                     elif c in ['N', 'E', 'Q', 'L', 'T', 'G']:
                         buf += c
                         if buf in ["NE", "EQ", "LT", "LE", "GT", "GE"]:
@@ -214,22 +214,22 @@ def lex(filename):
                         tok = Token(TokNames.OPER, ":=")
                         add_token(tok)
                         c = fd.read(1)
-                        CS = States.STANDBY
+                        CS = States.H
                     else:
                         tok = Token(TokNames.OPER, "as")
                         add_token(tok)
-                        CS = States.STANDBY
+                        CS = States.H
                 elif CS == States.COMM: # COMMENT
                     while c:
                         c = fd.read(1)
                         if c == '}':
                             c = fd.read(1)
-                            CS = States.STANDBY
+                            CS = States.H
                             break
                     c = fd.read(1)
                 elif CS == States.ERR: # ERR
                     print(f"\nAn unexpected error has occurred.")
-                    CS = States.STANDBY
+                    CS = States.H
 
     except FileNotFoundError:
         print(f"\nCannot open file {filename}.\n")
